@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  # Placeholders for Postgres, Mongo, Redis, Qdrant, Kafka, API, Frontend
+  api:
+    image: api-placeholder
+  postgres:
+    image: postgres:15
+  mongo:
+    image: mongo:6
+  redis:
+    image: redis:7
+  qdrant:
+    image: qdrant/qdrant
+  kafka:
+    image: confluentinc/cp-kafka

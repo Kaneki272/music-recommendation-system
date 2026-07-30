@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+motor
+sqlalchemy
+redis
+kafka-python
+qdrant-client
+torch
+lightfm
+sentence-transformers
+librosa
+scikit-learn
+xgboost
+pytest
