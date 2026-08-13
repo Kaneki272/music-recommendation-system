@@ -12,3 +12,6 @@ librosa
 scikit-learn
 xgboost
 pytest
+feast
+pandas
+pyarrow
