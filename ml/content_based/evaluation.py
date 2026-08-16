@@ -111,5 +111,12 @@ def create_ablation_configs():
         ),
         "C_audio_metadata": ContentBasedConfig(
             similarity_weights=SimilarityWeights(audio_weight=0.5, genre_weight=0.3, artist_weight=0.2)
+        ),
+        "D_audio_metadata_decay": ContentBasedConfig(
+            similarity_weights=SimilarityWeights(audio_weight=0.5, genre_weight=0.3, artist_weight=0.2),
+            profiler_half_life_days=30.0
+        ),
+        "E_metadata_only": ContentBasedConfig(
+            similarity_weights=SimilarityWeights(audio_weight=0.0, genre_weight=0.7, artist_weight=0.3)
         )
     }

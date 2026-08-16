@@ -2,8 +2,8 @@ project: music_recsys
 registry: data/registry.db
 provider: local
 online_store:
-    type: redis
-    connection_string: "localhost:6379"
+    type: sqlite
+    path: data/online_store.db
 offline_store:
     type: file
 entity_key_serialization_version: 2

@@ -63,3 +63,7 @@ class RecommendationResponse(BaseModel):
     model_version: ModelVersion
     generated_at: datetime = Field(default_factory=datetime.utcnow)
     latency_ms: Optional[float] = None
+    metadata: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Model-level metadata, e.g., profile_state=COLD_START | SPARSE_PROFILE | NORMAL"
+    )

@@ -28,7 +28,8 @@ def calculate_decay_multiplier(
     if half_life_days <= 0:
         return 0.0 if delta_days > 0 else 1.0
         
-    return math.pow(0.5, delta_days / half_life_days)
+    lambda_decay = math.log(2) / half_life_days
+    return math.exp(-lambda_decay * delta_days)
 
 
 def calculate_decayed_weight(

@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data and models
+datasets/
+models/
+*.tar.gz
+*.tar.gz.gz
+*.wav
+lightfm-1.17/
+
+# Logs and outputs
+*.log
+trace.txt
+out.txt
+e2e_stdout.txt
+e2e_stderr.txt
+scripts/popularity.txt
+scripts/extraction_output.txt
+vec_out.json
+*.npz
+*.pkl
+
+# Local Feast
+feature_store/repo/data/
+
+# Env
+.env
+venv/
+env/

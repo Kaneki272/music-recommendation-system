@@ -48,6 +48,7 @@ class InteractionRecord(BaseModel):
     interaction_type: InteractionType
     timestamp: datetime
     weight: float = Field(..., description="Pre-computed interaction weight from config")
+    source: Optional[str] = Field(None, description="Origin of the dataset (e.g., 'lastfm', 'app')")
     session_id: Optional[SessionId] = None
     context_type: Optional[str] = None     # playlist | radio | search | recommendation
 

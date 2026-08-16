@@ -9,7 +9,7 @@ from feast import FeatureView, Field
 from feast.types import Int64, Float32, String, Bool
 from feast.infra.offline_stores.file_source import FileSource
 
-from .entities import song, user
+from entities import song, user
 
 
 # --- Data Sources ---

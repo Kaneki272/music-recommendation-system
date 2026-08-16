@@ -18,8 +18,11 @@ class QdrantVectorStore(VectorStoreInterface):
     Qdrant implementation of the Vector Store.
     Manages connections and collection lifecycle.
     """
-    def __init__(self, host: str = "localhost", port: int = 6333, collection_name: str = "audio_v1"):
-        self.client = AsyncQdrantClient(host=host, port=port)
+    def __init__(self, host: str = "localhost", port: int = 6333, collection_name: str = "audio_v1", location: Optional[str] = None):
+        if location:
+            self.client = AsyncQdrantClient(location=location)
+        else:
+            self.client = AsyncQdrantClient(host=host, port=port)
         self.collection_name = collection_name
         self.dimension = CANONICAL_VECTOR_DIMENSION
 
@@ -27,17 +30,14 @@ class QdrantVectorStore(VectorStoreInterface):
         """Create the collection if it doesn't exist."""
         try:
             await self.client.get_collection(self.collection_name)
-        except UnexpectedResponse as e:
-            if e.status_code == 404:
-                await self.client.create_collection(
-                    collection_name=self.collection_name,
-                    vectors_config=rest.VectorParams(
-                        size=self.dimension,
-                        distance=rest.Distance.COSINE
-                    )
+        except (UnexpectedResponse, ValueError):
+            await self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=rest.VectorParams(
+                    size=self.dimension,
+                    distance=rest.Distance.COSINE
                 )
-            else:
-                raise e
+            )
 
     async def upsert(self, song_id: SongId, vector: List[float], payload: Dict[str, Any] = None) -> None:
         if len(vector) != self.dimension:
