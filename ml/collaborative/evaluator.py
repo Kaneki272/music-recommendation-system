@@ -32,6 +32,7 @@ class Evaluator:
         metrics.update({f"HitRate@{k}": [] for k in self.k_values})
         
         all_recommended_songs = set()
+        recommended_lists_for_diversity = []
         total_users = 0
         
         # We need a catalog of all possible songs to recommend
@@ -72,6 +73,7 @@ class Evaluator:
             if len(top_items) > 0:
                 # coverage tracks top-K max
                 all_recommended_songs.update(top_items)
+                recommended_lists_for_diversity.append(top_items)
                 
         # Aggregate
         result = {}
@@ -80,7 +82,28 @@ class Evaluator:
             
         result["Coverage"] = len(all_recommended_songs) / len(catalog) if catalog else 0.0
         
-        # Diversity: 1 - average pairwise similarity. (Omitted for now, needs content vectors. Return 0 for now)
-        result["Diversity"] = 0.0 
+        # Diversity: Recommendation-set diversity (Personalization)
+        # Measured as 1 - average pairwise Jaccard similarity between users' top-K lists.
+        # We use a randomized sample of pairs if the user count is large to avoid O(N^2).
+        
+        all_lists = [set(top_items) for top_items in recommended_lists_for_diversity if len(top_items) > 0]
+        if len(all_lists) > 1:
+            # Sample up to 1000 random pairs to estimate diversity efficiently
+            import random
+            num_pairs = min(1000, len(all_lists) * (len(all_lists) - 1) // 2)
+            similarities = []
+            
+            for _ in range(num_pairs):
+                i, j = random.sample(range(len(all_lists)), 2)
+                set1, set2 = all_lists[i], all_lists[j]
+                intersection = len(set1.intersection(set2))
+                union = len(set1.union(set2))
+                jaccard = intersection / union if union > 0 else 0.0
+                similarities.append(jaccard)
+                
+            avg_similarity = sum(similarities) / len(similarities)
+            result["Diversity"] = 1.0 - avg_similarity
+        else:
+            result["Diversity"] = 0.0
         
         return result
