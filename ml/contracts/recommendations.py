@@ -49,6 +49,18 @@ class RecommendationRequest(BaseModel):
         default_factory=list,
         description="Songs already played/liked — exclude from results"
     )
+    recently_played_song_ids: List[SongId] = Field(
+        default_factory=list,
+        description="Recently played songs to filter out"
+    )
+    blocked_song_ids: List[SongId] = Field(
+        default_factory=list,
+        description="Songs explicitly blocked by the user"
+    )
+    blocked_artist_ids: List[str] = Field(
+        default_factory=list,
+        description="Artists explicitly blocked by the user"
+    )
     context_type: Optional[str] = Field(
         None, description="home_feed | discovery_weekly | radio | playlist"
     )
