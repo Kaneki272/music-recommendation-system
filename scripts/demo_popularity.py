@@ -3,11 +3,16 @@ Popularity Model Demo
 =====================
 Demonstrates Phase 7 Popularity Baseline training and prediction.
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import asyncio
 from datetime import datetime, timedelta
 import yaml
 
 from ml.popularity.config import PopularityConfig, PopularityMode
+
 from ml.popularity.model import PopularityModel
 from ml.contracts.interactions import InteractionDataset, InteractionRecord, InteractionType
 from ml.contracts.identifiers import UserId, SongId

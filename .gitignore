@@ -8,7 +8,12 @@ models/
 *.tar.gz
 *.tar.gz.gz
 *.wav
+*.mp3
+*.webm
+*.m4a
+*.opus
 lightfm-1.17/
+
 
 # Logs and outputs
 *.log

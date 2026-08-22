@@ -1,5 +1,10 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import argparse
 import pandas as pd
+
 from ml.collaborative.config import InteractionWeightsConfig, ALSConfig
 from ml.collaborative.dataset_builder import DatasetBuilder
 from ml.collaborative.model import CollaborativeFilteringModel

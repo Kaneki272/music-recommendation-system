@@ -15,7 +15,8 @@ def p(*args, **kw):
 TARGET_SAMPLE_RATE    = 22_050
 N_MFCC                = 20
 EXTRACTION_VERSION    = "audio_v1"
-CANONICAL_VECTOR_DIM  = 222
+CANONICAL_VECTOR_DIM  = 215
+
 
 def make_signal(seed: int, duration: float = 8.0) -> np.ndarray:
     np.random.seed(seed)
@@ -77,7 +78,7 @@ def extract(song_id, seed):
         vec += [float(np.mean(row)), float(np.std(row))]
     vec += [harmonic_ratio]
 
-    assert len(vec) == CANONICAL_VECTOR_DIM, f"Expected 222, got {len(vec)}"
+    assert len(vec) == CANONICAL_VECTOR_DIM, f"Expected {CANONICAL_VECTOR_DIM}, got {len(vec)}"
 
     return {
         "song_id": song_id, "tempo_bpm": tempo_bpm,
@@ -162,7 +163,7 @@ for sid, seed, label in songs:
     p(f"      [ 24] Chroma     : mu={np.mean(hs):.4f}  sigma={np.std(hs):.4f}  range=[{min(hs):.4f}, {max(hs):.4f}]")
     ts = v[202:214]
     p(f"      [ 12] Tonnetz    : mu={np.mean(ts):.5f}  sigma={np.std(ts):.5f}")
-    p(f"      [  1] Harm Ratio : {v[221]:.4f}")
+    p(f"      [  1] Harm Ratio : {v[-1]:.4f}")
     p(f"    Vector Preview (dims 0-11):")
     prev = "  ".join(f"{x:+.4f}" for x in v[:12])
     p(f"      [ {prev} ... ]")
