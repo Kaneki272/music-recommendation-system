@@ -10,7 +10,7 @@
 | `artist_id` | Internal UUID | PostgreSQL `artists.id` | ✅ Secondary reference |
 | `session_id` | Ephemeral UUID | Not persisted | ✅ Session context only |
 
-## Audio Feature Vector (222 Dimensions)
+## Audio Feature Vector (215 Dimensions)
 
 | Index Range | Feature | Stats |
 |---|---|---|

@@ -11,12 +11,12 @@ AudioSource (URI)
       ↓
 [5.3] DSPExtractor       — Librosa: Rhythm + Timbral + Harmonic
       ↓
-[5.4] FeatureAggregator  — Time-series → Fixed 222-dim vector
+[5.4] FeatureAggregator  — Time-series → Fixed 215-dim vector
       ↓
 AudioFeatureVector       — Persisted to PostgreSQL + Qdrant
 ```
 
-## Feature Vector Breakdown (222 dimensions)
+## Feature Vector Breakdown (215 dimensions)
 
 | Feature Group | Raw Shape | Stats | Dimensions |
 |---|---|---|---|
@@ -32,7 +32,7 @@ AudioFeatureVector       — Persisted to PostgreSQL + Qdrant
 | Chroma STFT | (12, T) | mean, std | 24 |
 | Tonnetz | (6, T) | mean, std | 12 |
 | Harmonic Ratio | scalar | raw | 1 |
-| **Total** | | | **222** |
+| **Total** | | | **215** |
 
 ## Supported Audio Sources
 

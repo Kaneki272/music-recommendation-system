@@ -1,7 +1,7 @@
 """
 User Taste Profiler
 ===================
-Constructs a single 222-dimensional dense vector representing a user's taste
+Constructs a single 215-dimensional dense vector representing a user's taste
 by taking a time-decayed, weighted aggregation of their listening history.
 
 Decay Formula:

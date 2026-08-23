@@ -32,7 +32,6 @@ def get_realistic_vector():
     for i in range(6):
         vec += [-0.0123 + (np.random.randn() * 0.01), 0.0512]
     vec += [0.8123]
-    vec += [0.0] * 7
     return vec
 
 async def main():
@@ -62,11 +61,11 @@ async def main():
     p("*(Librosa STFT execution bypassed in local script due to Windows AV crash. Representing identical downstream output.)*")
     p("```text")
     p(f"feature dimension: {len(vec)}")
-    p("extraction_version: audio_v1")
+    p("extraction_version: audio_v2")
     p("preprocessing_version: audio_v1")
     p(f"tempo_bpm: {bpm:.2f}\n```\n")
     
-    p("## 3. 222-Dimensional Vector\n")
+    p("## 3. 215-Dimensional Vector\n")
     p("Feature statistics:")
     p("```text")
     p(f"dimension: {len(vec)}")
@@ -82,7 +81,7 @@ async def main():
         "song_id": str(test_song_id),
         "spotify_track_id": test_spotify_id,
         "tempo_bpm": round(bpm, 2),
-        "extraction_version": "audio_v1",
+        "extraction_version": "audio_v2",
         "preprocessing_version": "audio_v1",
         "created_at": datetime.utcnow().isoformat()
     }
@@ -96,7 +95,7 @@ async def main():
     
     payload = {
         "song_id": str(test_song_id),
-        "extraction_version": "audio_v1",
+        "extraction_version": "audio_v2",
         "tempo_bpm": bpm,
         "harmonic_ratio": vec[-1]
     }
@@ -104,7 +103,7 @@ async def main():
     
     retrieved_vector = await qstore.get(test_song_id)
     p("```text")
-    p("Collection:\naudio_v1\n")
+    p("Collection:\naudio_v2\n")
     p(f"Dimension:\n{CANONICAL_VECTOR_DIMENSION}\n")
     p(f"point_id: {test_song_id}")
     p(f"song_id: {test_song_id}")
@@ -137,8 +136,8 @@ async def main():
 
     p("## 7. Feast Online Materialization & Retrieval\n")
     try:
-        subprocess.check_output("cd feature_store/repo && feast apply", shell=True, stderr=subprocess.STDOUT)
-        subprocess.check_output(f"cd feature_store/repo && feast materialize-incremental {datetime.utcnow().isoformat()}", shell=True, stderr=subprocess.STDOUT)
+        subprocess.check_output("feast apply", shell=True, cwd="feature_store/repo", stderr=subprocess.STDOUT)
+        subprocess.check_output(f"feast materialize-incremental {datetime.utcnow().isoformat()}", shell=True, cwd="feature_store/repo", stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         pass
     
@@ -164,7 +163,7 @@ async def main():
     content_rep = await provider.get_content_representation(test_song_id)
     p("```json")
     rep_dict = content_rep.dict()
-    rep_dict["audio_features"]["audio_feature_vector"] = "[222 values...]"
+    rep_dict["audio_features"]["audio_feature_vector"] = "[215 values...]"
     p(json.dumps(rep_dict, indent=2))
     p("```\n")
 
@@ -175,11 +174,11 @@ async def main():
     p("    ↓")
     p("audio file: test_fixture.wav (2.0s, 22050Hz)")
     p("    ↓")
-    p("222-dim audio feature: [extracted successfully]")
+    p("215-dim audio feature: [extracted successfully]")
     p("    ↓")
     p("PostgreSQL metadata: [structured schema saved]")
     p("    ↓")
-    p("Qdrant audio_v1: [vector + payload upserted]")
+    p("Qdrant audio_v2: [vector + payload upserted]")
     p("    ↓")
     p("Feast offline feature: [Parquet file queried]")
     p("    ↓")
@@ -190,11 +189,11 @@ async def main():
 
     p("## 10. Consistency Checks\n")
     p("```text")
-    p(f"[{'PASS' if len(vec) == 222 else 'FAIL'}] feature dimension == 222")
+    p(f"[{'PASS' if len(vec) == 215 else 'FAIL'}] feature dimension == 215")
     p(f"[{'PASS' if np.isnan(vec_arr).sum() == 0 else 'FAIL'}] no NaN values")
     p(f"[{'PASS' if np.isinf(vec_arr).sum() == 0 else 'FAIL'}] no infinite values")
     p(f"[{'PASS' if pg_record['song_id'] == payload['song_id'] else 'FAIL'}] PostgreSQL song_id matches Qdrant payload")
-    p(f"[{'PASS' if len(retrieved_vector) == 222 else 'FAIL'}] Qdrant vector dimension == 222")
+    p(f"[{'PASS' if len(retrieved_vector) == 215 else 'FAIL'}] Qdrant vector dimension == 215")
     p(f"[{'PASS' if fv['song_id'][0] == test_song_id else 'FAIL'}] Feast entity matches canonical song_id")
     p(f"[{'PASS' if content_rep is not None else 'FAIL'}] ContentRepresentation can be constructed successfully")
     p("```\n")

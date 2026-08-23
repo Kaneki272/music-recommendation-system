@@ -40,7 +40,7 @@ class AudioFeatureVector:
       Chroma   : 12 pitch classes × 2 stats (mean, std)               =  24
       Tonnetz  : 6 dimensions × 2 stats (mean, std)                   =  12
       Harmonic : harmonic_ratio(1)                                     =   1
-                                                              Total = 222
+                                                              Total = 215
     """
     song_id: str
     vector: List[float]                # Fixed-length feature vector

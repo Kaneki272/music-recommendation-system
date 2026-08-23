@@ -13,7 +13,7 @@ The Content-Based model MUST handle None modalities gracefully.
 It MUST NOT crash because one modality is unavailable.
 
 DO NOT confuse:
-  AudioFeatureVector  → raw 222-dim acoustic features (this contract)
+  AudioFeatureVector  → raw 215-dim acoustic features (this contract)
   ContentEmbedding    → the learned dense representation (Phase 8 output)
 """
 from pydantic import BaseModel, Field
@@ -66,7 +66,7 @@ class ContentRepresentation(BaseModel):
 
     # ── Modalities (all optional) ───────────────────────────────
     audio_features: Optional[AudioFeatureVector] = Field(
-        None, description="222-dim acoustic feature vector from Phase 5 pipeline"
+        None, description="215-dim acoustic feature vector from Phase 5 pipeline"
     )
     metadata_features: Optional[MetadataFeatureVector] = Field(
         None, description="Structured song metadata"

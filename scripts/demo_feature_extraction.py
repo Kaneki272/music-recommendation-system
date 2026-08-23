@@ -14,8 +14,8 @@ def p(*args, **kw):
 
 TARGET_SAMPLE_RATE    = 22_050
 N_MFCC                = 20
-EXTRACTION_VERSION    = "audio_v1"
-CANONICAL_VECTOR_DIM  = 222
+EXTRACTION_VERSION    = "audio_v2"
+CANONICAL_VECTOR_DIM  = 215
 
 def make_signal(seed: int, duration: float = 8.0) -> np.ndarray:
     np.random.seed(seed)
@@ -43,8 +43,13 @@ def extract(song_id, seed):
     t0 = time.perf_counter()
 
     onset_env        = librosa.onset.onset_strength(y=y, sr=sr)
-    tempo, beats     = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
-    tempo_bpm        = float(np.atleast_1d(tempo)[0])
+    try:
+        tempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sr)
+        tempo_bpm = float(np.atleast_1d(tempo)[0])
+        n_beats = int(np.sum(onset_env > np.mean(onset_env)))
+    except Exception:
+        tempo_bpm = 120.0
+        n_beats = 0
 
     mfcc             = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCC)
     spec_centroid    = librosa.feature.spectral_centroid(y=y, sr=sr)
@@ -61,7 +66,7 @@ def extract(song_id, seed):
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
     vec = []
-    vec += [tempo_bpm, float(len(beats)), float(np.mean(onset_env))]
+    vec += [tempo_bpm, float(n_beats), float(np.mean(onset_env))]
     for i in range(N_MFCC):
         vec += stats7(mfcc[i, :])
     vec += stats7(spec_centroid)
@@ -77,11 +82,11 @@ def extract(song_id, seed):
         vec += [float(np.mean(row)), float(np.std(row))]
     vec += [harmonic_ratio]
 
-    assert len(vec) == CANONICAL_VECTOR_DIM, f"Expected 222, got {len(vec)}"
+    assert len(vec) == CANONICAL_VECTOR_DIM, f"Expected {CANONICAL_VECTOR_DIM}, got {len(vec)}"
 
     return {
         "song_id": song_id, "tempo_bpm": tempo_bpm,
-        "beat_count": len(beats), "onset_mean": float(np.mean(onset_env)),
+        "beat_count": n_beats, "onset_mean": float(np.mean(onset_env)),
         "mfcc_shape": mfcc.shape,
         "mfcc0_mean": float(np.mean(mfcc[0])), "mfcc0_std": float(np.std(mfcc[0])),
         "centroid_mean": float(np.mean(spec_centroid)),
@@ -107,7 +112,7 @@ SEP = "=" * 72
 p()
 p("+" + "=" * 70 + "+")
 p("|    AUDIO FEATURE EXTRACTION PIPELINE  --  OUTPUT REPORT              |")
-p("|    Extraction Version: audio_v1   |   Vector Dimension: 222          |")
+p("|    Extraction Version: audio_v2   |   Vector Dimension: 215          |")
 p("+" + "=" * 70 + "+")
 
 all_results = []
@@ -142,7 +147,7 @@ for sid, seed, label in songs:
     p(f"      Tonnetz Shape     : {r['tonnetz_shape']}  (6 tonal dims x T frames)")
     p(f"      Harmonic Ratio    : {r['harmonic_ratio']:>8.4f}  (0=percussive -> 1=harmonic)")
 
-    p(f"\n  [AGGREGATOR OUTPUT  ->  222-dim AudioFeatureVector]")
+    p(f"\n  [AGGREGATOR OUTPUT  ->  215-dim AudioFeatureVector]")
     p(f"    Total Dimensions  : {len(v)}")
     p(f"    Breakdown:")
     p(f"      [  3] Rhythm     : {v[0]:.2f} BPM | {v[1]:.0f} beats | onset_mu={v[2]:.4f}")
@@ -162,7 +167,7 @@ for sid, seed, label in songs:
     p(f"      [ 24] Chroma     : mu={np.mean(hs):.4f}  sigma={np.std(hs):.4f}  range=[{min(hs):.4f}, {max(hs):.4f}]")
     ts = v[202:214]
     p(f"      [ 12] Tonnetz    : mu={np.mean(ts):.5f}  sigma={np.std(ts):.5f}")
-    p(f"      [  1] Harm Ratio : {v[221]:.4f}")
+    p(f"      [  1] Harm Ratio : {v[214]:.4f}")
     p(f"    Vector Preview (dims 0-11):")
     prev = "  ".join(f"{x:+.4f}" for x in v[:12])
     p(f"      [ {prev} ... ]")

@@ -40,4 +40,4 @@ ModelVersion    = NewType("ModelVersion",    str)  # e.g., "v1.2.0"
 DatasetVersion  = NewType("DatasetVersion",  str)  # e.g., "2026-08-01"
 JobId           = NewType("JobId",           str)  # UUID for ETL/training jobs
 
-CANONICAL_VECTOR_DIMENSION: int = 222  # The fixed dimension of audio_feature_vector
+CANONICAL_VECTOR_DIMENSION: int = 215  # The fixed dimension of audio_feature_vector

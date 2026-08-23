@@ -1,7 +1,7 @@
 """
 ML Contract — Audio Feature Vector
 =====================================
-Formalizes the 222-dimensional output from the Phase 5 Audio
+Formalizes the 215-dimensional output from the Phase 5 Audio
 Extraction Pipeline as the canonical `audio_feature_vector`
 for all downstream ML consumers.
 
@@ -27,8 +27,8 @@ Dimension Index Map (authoritative ordering):
   Index   214      : harmonic_ratio
                                                TOTAL = 215 dimensions
 
-NOTE: The aggregator docstring documents 222 total — the authoritative
-dimension count is 222. This file tracks the explicit index map.
+NOTE: The aggregator docstring documents 215 total — the authoritative
+dimension count is 215. This file tracks the explicit index map.
 If there is a discrepancy, the implementation MUST be updated and
 this file kept in sync. A unit test enforces this constraint.
 """
@@ -89,8 +89,8 @@ class AudioFeatureVector(BaseModel):
             "example": {
                 "song_id": "550e8400-e29b-41d4-a716-446655440000",
                 "audio_feature_vector": [128.5, 42.0, 0.78, "..."],
-                "feature_dimension": 222,
-                "extraction_version": "v1.0.0",
+                "feature_dimension": 215,
+                "extraction_version": "audio_v2",
                 "preprocessing_version": "v1.0.0",
             }
         }

@@ -22,7 +22,7 @@ class FeatureProviderInterface(ABC):
 
     @abstractmethod
     async def get_audio_features(self, song_id: SongId) -> Optional[AudioFeatureVector]:
-        """Retrieve the 222-dim audio_feature_vector for a song."""
+        """Retrieve the 215-dim audio_feature_vector for a song."""
         pass
 
     @abstractmethod

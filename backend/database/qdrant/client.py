@@ -2,9 +2,10 @@
 Qdrant Vector Store Implementation
 ====================================
 Implements the VectorStoreInterface for Qdrant.
-Stores the 222-dimensional audio_v1 embeddings.
+Stores the 215-dimensional audio_v2 embeddings.
 """
 from typing import List, Optional, Dict, Any
+import os
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http import models as rest
 from qdrant_client.http.exceptions import UnexpectedResponse
@@ -18,9 +19,13 @@ class QdrantVectorStore(VectorStoreInterface):
     Qdrant implementation of the Vector Store.
     Manages connections and collection lifecycle.
     """
-    def __init__(self, host: str = "localhost", port: int = 6333, collection_name: str = "audio_v1", location: Optional[str] = None):
+    def __init__(self, host: str = "localhost", port: int = 6333, collection_name: str = None, location: Optional[str] = None, path: Optional[str] = None):
+        if collection_name is None:
+            collection_name = os.environ.get("QDRANT_AUDIO_COLLECTION", "audio_v2")
         if location:
             self.client = AsyncQdrantClient(location=location)
+        elif path:
+            self.client = AsyncQdrantClient(path=path)
         else:
             self.client = AsyncQdrantClient(host=host, port=port)
         self.collection_name = collection_name
@@ -88,9 +93,9 @@ class QdrantVectorStore(VectorStoreInterface):
             ]
             qdrant_filter = rest.Filter(must=must_conditions)
 
-        hits = await self.client.search(
+        hits = await self.client.query_points(
             collection_name=self.collection_name,
-            query_vector=query_vector,
+            query=query_vector,
             query_filter=qdrant_filter,
             limit=top_k
         )
@@ -100,7 +105,7 @@ class QdrantVectorStore(VectorStoreInterface):
                 song_id=SongId(hit.id),
                 score=hit.score,
                 payload=hit.payload
-            ) for hit in hits
+            ) for hit in hits.points
         ]
 
     async def get(self, song_id: SongId) -> Optional[List[float]]:

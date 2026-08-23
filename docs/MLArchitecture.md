@@ -7,7 +7,7 @@ flowchart TD
     A[Raw Audio Files] --> B[Audio Extraction Pipeline
 Phase 5]
     B --> C[audio_feature_vector
-222 dimensions]
+215 dimensions]
     C --> D[AudioFeatureVector Contract
 ml/contracts/audio.py]
 

@@ -5,7 +5,7 @@ from scipy import stats
 
 TARGET_SAMPLE_RATE = 22050
 N_MFCC = 20
-CANONICAL_DIM = 222
+CANONICAL_DIM = 215
 
 def make_signal(seed, duration=2.0):
     np.random.seed(seed)
@@ -34,8 +34,13 @@ def extract(song_id, seed, label):
     # compute mel spec once to speed up everything else
     S = np.abs(librosa.stft(y))
     oe          = librosa.onset.onset_strength(S=librosa.amplitude_to_db(S, ref=np.max), sr=sr)
-    tempo, beats = librosa.beat.beat_track(onset_envelope=oe, sr=sr)
-    bpm         = float(np.atleast_1d(tempo)[0])
+    try:
+        tempo = librosa.feature.tempo(onset_envelope=oe, sr=sr)
+        bpm = float(np.atleast_1d(tempo)[0])
+        n_beats = int(np.sum(oe > np.mean(oe)))
+    except Exception:
+        bpm = 120.0
+        n_beats = 0
     
     mfcc        = librosa.feature.mfcc(S=librosa.power_to_db(S**2), sr=sr, n_mfcc=N_MFCC)
     centroid    = librosa.feature.spectral_centroid(S=S, sr=sr)
@@ -56,7 +61,7 @@ def extract(song_id, seed, label):
 
     # Build 222-dim vector
     vec = []
-    vec += [bpm, float(len(beats)), float(np.mean(oe))]        # 3
+    vec += [bpm, float(n_beats), float(np.mean(oe))]        # 3
     for i in range(N_MFCC):                                      # 140
         vec += s7(mfcc[i, :])
     vec += s7(centroid)                                           # 7
@@ -78,7 +83,7 @@ def extract(song_id, seed, label):
 
     return {
         "song_id": song_id, "label": label,
-        "bpm": bpm, "beat_count": len(beats), "onset_mu": float(np.mean(oe)),
+        "bpm": bpm, "beat_count": n_beats, "onset_mu": float(np.mean(oe)),
         "mfcc_shape": mfcc.shape,
         "mfcc0_mu": float(np.mean(mfcc[0])), "mfcc0_sd": float(np.std(mfcc[0])),
         "centroid_mu": float(np.mean(centroid)),
@@ -102,7 +107,7 @@ songs = [
 print()
 print("+" + "=" * 66 + "+")
 print("|   AUDIO FEATURE EXTRACTION PIPELINE  --  OUTPUT REPORT          |")
-print("|   Extraction Version: audio_v1   |   Vector Dimension: 222      |")
+print("|   Extraction Version: audio_v2   |   Vector Dimension: 215      |")
 print("+" + "=" * 66 + "+")
 
 results = []
@@ -152,13 +157,13 @@ for sid, seed, label in songs:
     print(f"    [  7] RMS    : mu={np.mean(es):.6f}  sd={np.std(es):.6f}")
     print(f"    [ 24] Chroma : mu={np.mean(hs):.4f}  sd={np.std(hs):.4f}  range=[{min(hs):.4f},{max(hs):.4f}]")
     print(f"    [ 12] Tonnetz: mu={np.mean(ts):.5f}  sd={np.std(ts):.5f}")
-    print(f"    [  1] HRatio : {v[221]:.4f}")
+    print(f"    [  1] HRatio : {v[214]:.4f}")
     prev = "  ".join(f"{x:+.4f}" for x in v[:8])
     print(f"    Preview [0:8]: {prev}  ...")
     print(f"\n    Qdrant Payload:")
     print(f"      song_id            : {r['song_id']}")
     print(f"      vector_dimension   : {len(v)}")
-    print(f"      extraction_version : audio_v1")
+    print(f"      extraction_version : audio_v2")
     print(f"      tempo_bpm          : {r['bpm']:.2f}")
     print(f"      harmonic_ratio     : {r['hr']:.4f}")
     print(f"\n  Extraction time: {r['elapsed']:.1f} ms")

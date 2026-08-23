@@ -7,7 +7,7 @@ The Content-Based Recommendation Model fuses strict dense vector retrieval (Qdra
 flowchart TD
     User[User History] --> Profiler[User Taste Profiler
 Time-Decayed Aggregation]
-    Profiler --> TasteVector[222-dim Taste Vector]
+    Profiler --> TasteVector[215-dim Taste Vector]
     TasteVector --> Qdrant[Qdrant
 Approx Nearest Neighbor Search]
     

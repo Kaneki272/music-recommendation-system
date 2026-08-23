@@ -32,8 +32,8 @@ VALID_VECTOR = [float(i) for i in range(CANONICAL_VECTOR_DIMENSION)]
 
 # ── 1. Identifier Tests ─────────────────────────────────────────
 
-def test_canonical_vector_dimension_is_222():
-    assert CANONICAL_VECTOR_DIMENSION == 222
+def test_canonical_vector_dimension_is_215():
+    assert CANONICAL_VECTOR_DIMENSION == 215
 
 
 def test_song_id_is_str():
@@ -52,12 +52,12 @@ def test_audio_feature_vector_valid():
     afv = AudioFeatureVector(
         song_id=VALID_SONG_ID,
         audio_feature_vector=VALID_VECTOR,
-        feature_dimension=222,
+        feature_dimension=215,
         extraction_version="v1.0.0",
         preprocessing_version="v1.0.0",
     )
-    assert afv.feature_dimension == 222
-    assert len(afv.audio_feature_vector) == 222
+    assert afv.feature_dimension == 215
+    assert len(afv.audio_feature_vector) == 215
 
 
 def test_audio_feature_vector_rejects_wrong_dimension():
@@ -75,8 +75,8 @@ def test_audio_feature_vector_rejects_mismatched_length():
     with pytest.raises(ValidationError):
         AudioFeatureVector(
             song_id=VALID_SONG_ID,
-            audio_feature_vector=[0.1] * 50,    # Doesn't match 222
-            feature_dimension=222,              # Claims 222 but vector is 50
+            audio_feature_vector=[0.1] * 50,    # Doesn't match 215
+            feature_dimension=215,              # Claims 215 but vector is 50
             extraction_version="v1.0.0",
             preprocessing_version="v1.0.0",
         )
@@ -100,7 +100,7 @@ def test_content_representation_partial_modalities():
     afv = AudioFeatureVector(
         song_id=VALID_SONG_ID,
         audio_feature_vector=VALID_VECTOR,
-        feature_dimension=222,
+        feature_dimension=215,
         extraction_version="v1.0.0",
         preprocessing_version="v1.0.0",
     )
