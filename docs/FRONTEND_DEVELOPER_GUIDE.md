@@ -68,8 +68,29 @@ const response = await fetch(`${API_BASE_URL}/api/v1/interactions/`, {
 });
 ```
 
-## 10. Mock-Data Development Mode
-If the backend is offline, you should build mock data handlers (e.g., using MSW or conditional hardcoded JSON) returning dummy recommendation cards to unblock UI development.
+## 10. Mock API vs Real API Mode
+
+The frontend project is now equipped with a unified API layer that seamlessly switches between a **Mock API** and the **Real FastAPI**. This allows you to work on the UI entirely independently of the backend when needed.
+
+### Configuration
+Toggle the mode using the `.env` file in the `frontend/` directory (you can copy `.env.example` to `.env`):
+
+```env
+# Set to 'true' to use the Mock API, 'false' to use the Real FastAPI
+VITE_USE_MOCK_API=true
+VITE_API_BASE_URL=http://localhost:8000
+VITE_DEMO_USER_ID=user_000949
+```
+
+### How it Works
+- **Unified Interface (`src/api/index.js`)**: All UI components import `getRecommendations`, `sendInteraction`, and `getHealth` from here. The components do not care which mode is active.
+- **Mock Service (`src/api/mockService.js`)**: Generates realistic dummy responses matching the FastAPI schema exactly. It includes simulated network delays to replicate real-world conditions.
+- **Real Service (`src/api/realService.js`)**: Makes actual `fetch()` calls to `VITE_API_BASE_URL`.
+
+### What You Should and Shouldn't Touch
+- **DO NOT TOUCH** `src/api/realService.js` or the expected data schema unless the backend contract explicitly changes. This must always perfectly match the FastAPI endpoint signature.
+- **YOU MAY MODIFY** `src/api/mockService.js` to change the dummy data (e.g., adding edge cases like empty lists, error simulations) as long as it adheres to the expected backend shape.
+- **UI Components**: Feel free to build and modify React components. They should only import from `src/api/index.js`.
 
 ## 11. Local Backend URL
 Local backend is accessible at: `http://localhost:8000`
