@@ -1,4 +1,11 @@
-version: '3.8'
+# ==============================================================================
+# DEPLOYMENT DEFINITION
+# ==============================================================================
+# NOTE: This docker-compose.yml defines the full-stack deployment (API + Frontend + DBs).
+# If you are developing locally, the parent directory's docker-compose.yml is typically
+# used as the canonical infrastructure runtime for databases to preserve persistent volumes.
+# This file is useful for spinning up the entire stack from scratch or for deployment.
+# ==============================================================================
 
 services:
   # ---------------------------------------------------------
@@ -17,7 +24,7 @@ services:
       - MONGO_URI=mongodb://user:password@mongo:27017/
       - REDIS_URI=redis://redis:6379/0
       - QDRANT_URI=http://qdrant:6333
-      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_BROKERS=kafka:29092
     depends_on:
       postgres:
         condition: service_healthy
@@ -109,7 +116,7 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:6333/ || exit 1"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/6333' || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -138,7 +145,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -156,6 +164,10 @@ networks:
 
 volumes:
   postgres_data:
+    name: music_recsys_postgres_data
   mongo_data:
+    name: music_recsys_mongo_data
   redis_data:
+    name: music_recsys_redis_data
   qdrant_data:
+    name: music_recsys_qdrant_data

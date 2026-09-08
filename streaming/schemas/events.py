@@ -7,6 +7,20 @@ class BaseEvent(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Event generation timestamp")
     user_id: str = Field(..., description="User ID associated with the event")
     session_id: Optional[str] = Field(None, description="User session ID")
+    source: str = Field(default="system", description="Source of the event (e.g., spotify, synthetic, web)")
+
+class MusicEvent(BaseEvent):
+    """
+    Canonical, source-independent event representing a user interaction with a track.
+    Used by Kafka to ensure consumers don't rely on Spotify-specific payloads.
+    """
+    track_id: str = Field(..., description="Canonical ID of the track")
+    event_type: str = Field(..., description="Type of interaction (e.g., PLAY, LIKE, SKIP)")
+    artist_id: Optional[str] = Field(None, description="Canonical ID of the artist")
+    album_id: Optional[str] = Field(None, description="Canonical ID of the album")
+    duration_played_ms: Optional[int] = Field(None, description="Total milliseconds played if applicable")
+    completion_rate: Optional[float] = Field(None, description="Percentage of track completed (0.0 to 1.0)")
+
 
 class SongPlayed(BaseEvent):
     song_id: str = Field(..., description="ID of the song played")

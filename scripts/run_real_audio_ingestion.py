@@ -156,7 +156,8 @@ async def process_all_files():
     print(f"\nExtraction complete. Success: {len(success_results)}, Errors: {len(error_results)}")
     
     # 4. Qdrant & 5. Database Setup
-    qstore = QdrantVectorStore(collection_name="audio_v2", path="datasets/processed/qdrant_db")
+    from backend.config.settings import settings
+    qstore = QdrantVectorStore(collection_name="audio_features", location=settings.QDRANT_URI)
     await qstore.initialize_collection()
     
     db = SessionLocal()
@@ -268,7 +269,7 @@ async def process_all_files():
     print(f"Total files: {len(files)}")
     print(f"Successful extractions: {len(success_results)}")
     
-    q_count = await qstore.client.count(collection_name="audio_v2")
+    q_count = await qstore.client.count(collection_name="audio_features")
     print(f"Qdrant collection count: {q_count.count}")
     
     db_count = db.query(AudioFeature).count()

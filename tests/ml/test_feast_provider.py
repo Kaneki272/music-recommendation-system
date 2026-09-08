@@ -5,9 +5,8 @@ Mocks the Feast FeatureStore and QdrantVectorStore to verify
 the adapter logic in FeastFeatureProvider.
 """
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 import json
-
 from feature_store.feast_provider import FeastFeatureProvider
 from ml.contracts.identifiers import SongId, UserId, CANONICAL_VECTOR_DIMENSION
 
@@ -23,9 +22,9 @@ def mock_qdrant_store():
 
 @pytest.fixture
 def feature_provider(mock_feast_store, mock_qdrant_store):
-    provider = FeastFeatureProvider(repo_path="dummy/path", qdrant_store=mock_qdrant_store)
-    provider.store = mock_feast_store  # override the actual store
-    return provider
+    with patch("feature_store.feast_provider.FeatureStore", return_value=mock_feast_store):
+        provider = FeastFeatureProvider(repo_path="dummy/path", qdrant_store=mock_qdrant_store)
+        return provider
 
 @pytest.mark.asyncio
 async def test_get_audio_features(feature_provider, mock_qdrant_store):
