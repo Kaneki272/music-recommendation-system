@@ -40,6 +40,8 @@ class Settings(BaseSettings):
 
     # ML
     MODEL_CHECKPOINT_DIR: str = "/models/checkpoints"
+    MAX_AUDIO_UPLOAD_SIZE_MB: int = 20
+
 
     # CORS
     FRONTEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]

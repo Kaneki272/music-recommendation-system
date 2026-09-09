@@ -43,9 +43,11 @@ app.add_middleware(
 
 from backend.api.v1.recommendations.router import router as recommendations_router
 from backend.api.v1.interactions.router import router as interactions_router
+from backend.api.v1.songs.router import router as songs_router
 
 app.include_router(recommendations_router, prefix="/api/v1")
 app.include_router(interactions_router, prefix="/api/v1")
+app.include_router(songs_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health_check():
