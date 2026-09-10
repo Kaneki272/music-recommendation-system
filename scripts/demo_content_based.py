@@ -1,8 +1,13 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import asyncio
 from typing import List
 
 from ml.content_based.evaluation import create_ablation_configs
 from ml.content_based.config import ContentBasedConfig
+
 
 def run_ablation_experiment():
     print("# Phase 8: Content-Based Filtering Ablation Results")

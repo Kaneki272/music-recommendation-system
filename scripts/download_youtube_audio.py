@@ -18,9 +18,17 @@ def download_youtube(url_or_query: str):
     os.makedirs(TARGET_DIR, exist_ok=True)
     out_template = os.path.join(TARGET_DIR, "%(title)s.%(ext)s")
 
+    # Handle environments where local SSL cert verification fails
+    try:
+        import ssl
+        ssl._create_default_https_context = ssl._create_unverified_context
+    except Exception:
+        pass
+
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': out_template,
+        'nocheckcertificate': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',

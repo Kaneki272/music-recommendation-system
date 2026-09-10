@@ -58,8 +58,9 @@ def extract_features(audio_path: str):
     tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
     flatness = librosa.feature.spectral_flatness(y=y)
     harmonic_ratio = float(1.0 - np.mean(flatness))
+    spec_contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
 
-    # Build 215-dim canonical feature vector
+    # Build 222-dim canonical feature vector
     vec = []
     vec += [tempo_bpm, float(len(beats)), float(np.mean(onset_env))]
     for i in range(N_MFCC):
@@ -75,6 +76,8 @@ def extract_features(audio_path: str):
     for d in range(6):
         row = tonnetz[d, :]
         vec += [float(np.mean(row)), float(np.std(row))]
+    for b in range(7):
+        vec += [float(np.mean(spec_contrast[b, :]))]
     vec += [harmonic_ratio]
 
     elapsed = (time.perf_counter() - t0) * 1000
