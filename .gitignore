@@ -34,3 +34,13 @@ feature_store/repo/data/
 .env
 venv/
 env/
+.venv/
+
+# Generated outputs
+eval_output.txt
+final_output.md
+recsys.db
+
+# Frontend build artifacts
+frontend/dist/
+frontend/node_modules/
