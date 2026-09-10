@@ -9,8 +9,9 @@ asyncpg
 pydantic-settings
 pydantic
 implicit>=0.7.3
-lightfm
 feast
 pandas
 pyarrow
 scikit-learn
+pyyaml
+
