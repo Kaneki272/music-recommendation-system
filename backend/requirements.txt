@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+motor
+sqlalchemy
+redis
+kafka-python
+qdrant-client
+asyncpg
+pydantic-settings
+pydantic
