@@ -1,7 +1,7 @@
 """
 Database dependency injection and connection management.
 """
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 import motor.motor_asyncio
 import redis.asyncio as aioredis
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -53,18 +53,19 @@ async def close_redis():
         await redis_client.close()
 
 # FastAPI Dependencies
-async def get_postgres_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_postgres_db() -> AsyncGenerator[Optional[AsyncSession], None]:
     if not postgres_session_factory:
-        raise RuntimeError("Postgres not initialized")
+        yield None
+        return
     async with postgres_session_factory() as session:
         yield session
 
 async def get_mongo_db():
     if not mongo_client:
-        raise RuntimeError("MongoDB not initialized")
+        return None
     return mongo_client[settings.MONGO_DATABASE]
 
 async def get_redis_client():
     if not redis_client:
-        raise RuntimeError("Redis not initialized")
+        return None
     return redis_client

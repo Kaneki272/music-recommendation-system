@@ -29,6 +29,13 @@ async def get_recommendations(
         engine.user_interaction_counts[user_id] = count
         
         response = await engine.predict(req)
+        
+        # Enrich recommendations with audio stream URLs
+        for rec in response.recommendations:
+            if rec.metadata is None:
+                rec.metadata = {}
+            rec.metadata["audio_url"] = f"/api/v1/songs/{rec.song_id}/stream"
+            
         return response
     except HTTPException:
         raise
