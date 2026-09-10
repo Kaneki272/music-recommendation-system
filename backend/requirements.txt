@@ -14,4 +14,10 @@ pandas
 pyarrow
 scikit-learn
 pyyaml
+librosa
+python-multipart
+passlib[bcrypt]
+bcrypt
+python-jose[cryptography]
+
 
