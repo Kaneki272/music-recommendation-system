@@ -38,10 +38,11 @@ def test_profiler_aggregation():
     i1 = InteractionRecord(user_id=UserId("u1"), song_id=SongId("s1"), interaction_type=InteractionType.PLAY, timestamp=datetime(2026, 7, 22), weight=1.0)
     a1 = AudioFeatureVector(song_id=SongId("s1"), audio_feature_vector=[1.0] * CANONICAL_VECTOR_DIMENSION, feature_dimension=CANONICAL_VECTOR_DIMENSION, extraction_version="v1", preprocessing_version="v1")
     
-    profile_vector = profiler.generate_profile([i1], [a1], ref_time)
-    assert profile_vector is not None
-    assert len(profile_vector) == CANONICAL_VECTOR_DIMENSION
-    assert profile_vector[0] == 1.0  # (1.0 * 0.5) / 0.5 = 1.0
+    profile_result = profiler.generate_profile([i1], [a1], ref_time)
+    assert profile_result is not None
+    assert profile_result.vector is not None
+    assert len(profile_result.vector) == CANONICAL_VECTOR_DIMENSION
+    assert profile_result.vector[0] == 1.0  # (1.0 * 0.5) / 0.5 = 1.0
 
 def test_metadata_similarity():
     # Genre sim

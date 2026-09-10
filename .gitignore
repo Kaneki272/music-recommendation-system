@@ -16,14 +16,22 @@ trace.txt
 out.txt
 e2e_stdout.txt
 e2e_stderr.txt
+e2e_output.md
 scripts/popularity.txt
 scripts/extraction_output.txt
 vec_out.json
 *.npz
 *.pkl
+extraction_demo.md
+walkthrough.md
 
 # Local Feast
 feature_store/repo/data/
+
+# Databases
+*.db
+ingestion.db
+recsys.db
 
 # Env
 .env

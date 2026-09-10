@@ -17,3 +17,5 @@ pandas
 pyarrow
 
 implicit>=0.7.3
+asyncpg
+pydantic-settings
