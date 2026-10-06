@@ -7,11 +7,13 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 try:
-    import static_ffmpeg
-    static_ffmpeg.add_paths()
-    print("ffmpeg binaries initialized via static-ffmpeg.")
+    import importlib.util
+    if importlib.util.find_spec("static_ffmpeg") is not None:
+        import static_ffmpeg  # type: ignore
+        static_ffmpeg.add_paths()
+        print("ffmpeg binaries initialized via static-ffmpeg.")
 except Exception as e:
-    print(f"static-ffmpeg initialization note: {e}")
+    pass
 
 TARGET_DIR = os.path.join("datasets", "raw", "audio_samples")
 

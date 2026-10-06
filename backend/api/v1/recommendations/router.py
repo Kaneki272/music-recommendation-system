@@ -30,10 +30,16 @@ async def get_recommendations(
         
         response = await engine.predict(req)
         
-        # Enrich recommendations with audio stream URLs
+        from backend.api.v1.songs.router import find_audio_file
+        
+        # Enrich recommendations with audio stream URLs and metadata
         for rec in response.recommendations:
             if rec.metadata is None:
                 rec.metadata = {}
+            item = find_audio_file(rec.song_id)
+            if item:
+                rec.metadata["title"] = item["title"]
+                rec.metadata["artist"] = item["artist"]
             rec.metadata["audio_url"] = f"/api/v1/songs/{rec.song_id}/stream"
             
         return response

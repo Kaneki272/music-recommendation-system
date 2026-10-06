@@ -15,16 +15,20 @@ except Exception:
     pass
 
 # Try to register FFmpeg from optional helper packages
-for mod_name in ['static_ffmpeg', 'imageio_ffmpeg']:
+import importlib.util
+if importlib.util.find_spec("static_ffmpeg") is not None:
     try:
-        if mod_name == 'static_ffmpeg':
-            import static_ffmpeg
-            static_ffmpeg.add_paths()
-        else:
-            import imageio_ffmpeg
-            ffmpeg_dir = os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
-            if ffmpeg_dir not in os.environ.get("PATH", ""):
-                os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+        import static_ffmpeg  # type: ignore
+        static_ffmpeg.add_paths()
+    except Exception:
+        pass
+
+if importlib.util.find_spec("imageio_ffmpeg") is not None:
+    try:
+        import imageio_ffmpeg
+        ffmpeg_dir = os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
+        if ffmpeg_dir not in os.environ.get("PATH", ""):
+            os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
     except Exception:
         pass
 

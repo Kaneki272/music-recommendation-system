@@ -8,8 +8,10 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 # Register FFmpeg binary location for Librosa / Audioread
 try:
-    import static_ffmpeg
-    static_ffmpeg.add_paths()
+    import importlib.util
+    if importlib.util.find_spec("static_ffmpeg") is not None:
+        import static_ffmpeg  # type: ignore
+        static_ffmpeg.add_paths()
 except Exception:
     pass
 
