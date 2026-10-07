@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 motor
-sqlalchemy
+sqlalchemy[asyncio]
 redis
 kafka-python
 qdrant-client
