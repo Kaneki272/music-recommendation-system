@@ -56,11 +56,17 @@ export function GlobalPlayer() {
   };
 
   const handleEnded = () => {
-    if (currentTrack && userId) {
+    if (currentTrack && userId && audioRef.current) {
+      const duration_played_ms = Math.round(audioRef.current.currentTime * 1000);
+      const completion_rate = audioRef.current.duration ? (audioRef.current.currentTime / audioRef.current.duration) : 1.0;
+      
       postInteraction({
         user_id: userId,
         song_id: currentTrack.song_id,
-        interaction_type: 'COMPLETE'
+        interaction_type: 'COMPLETE',
+        duration_played_ms,
+        completion_rate,
+        session_id: 'web_session'
       }).then(() => {
         queryClient.invalidateQueries({ queryKey: ['recommendations'] });
       }).catch(console.error);
@@ -69,11 +75,17 @@ export function GlobalPlayer() {
   };
 
   const handleSkip = () => {
-    if (currentTrack && userId) {
+    if (currentTrack && userId && audioRef.current) {
+      const duration_played_ms = Math.round(audioRef.current.currentTime * 1000);
+      const completion_rate = audioRef.current.duration ? (audioRef.current.currentTime / audioRef.current.duration) : 0.0;
+      
       postInteraction({
         user_id: userId,
         song_id: currentTrack.song_id,
-        interaction_type: 'SKIP'
+        interaction_type: 'SKIP',
+        duration_played_ms,
+        completion_rate,
+        session_id: 'web_session'
       }).then(() => {
         queryClient.invalidateQueries({ queryKey: ['recommendations'] });
       }).catch(console.error);

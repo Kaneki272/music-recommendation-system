@@ -18,21 +18,15 @@ import asyncio
 # Setup DB tables for test using asyncpg
 from sqlalchemy.ext.asyncio import create_async_engine
 from backend.models.base import Base
+import pytest_asyncio
 
-async def setup_db():
+@pytest_asyncio.fixture(scope="module", autouse=True)
+async def setup_db_fixture():
     engine = create_async_engine(settings.POSTGRES_URI)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    yield
     await engine.dispose()
-
-try:
-    loop = asyncio.get_running_loop()
-except RuntimeError:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-loop.run_until_complete(setup_db())
-
-client = TestClient(app)
 
 @pytest.fixture(scope="module")
 def valid_wav_file(tmp_path_factory):

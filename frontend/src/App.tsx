@@ -5,6 +5,9 @@ import { Auth } from '@/pages/Auth';
 import { Home } from '@/pages/Home';
 import { useAuthStore } from '@/stores/useAuthStore';
 
+import { Search } from '@/pages/Search';
+import { Discover } from '@/pages/Discover';
+
 // Protected Route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -23,8 +26,8 @@ export default function App() {
       {/* Protected App Shell Routes */}
       <Route path="/" element={<ProtectedRoute><Shell /></ProtectedRoute>}>
         <Route path="home" element={<Home />} />
-        <Route path="discover" element={<div className="p-4 text-muted-foreground">Discover Page (Coming Soon)</div>} />
-        <Route path="search" element={<div className="p-4 text-muted-foreground">Search Page (Coming Soon)</div>} />
+        <Route path="discover" element={<Discover />} />
+        <Route path="search" element={<Search />} />
         <Route path="library" element={<div className="p-4 text-muted-foreground">Library (Coming Soon)</div>} />
         <Route path="settings" element={<div className="p-4 text-muted-foreground">Settings</div>} />
       </Route>

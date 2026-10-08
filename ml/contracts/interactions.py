@@ -51,6 +51,10 @@ class InteractionRecord(BaseModel):
     source: Optional[str] = Field(None, description="Origin of the dataset (e.g., 'lastfm', 'app')")
     session_id: Optional[SessionId] = None
     context_type: Optional[str] = None     # playlist | radio | search | recommendation
+    duration_played_ms: Optional[int] = None
+    completion_rate: Optional[float] = None
+    recommendation_request_id: Optional[str] = None
+    recommendation_position: Optional[int] = None
 
 
 class InteractionWeightConfig(BaseModel):

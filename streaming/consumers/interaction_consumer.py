@@ -89,6 +89,8 @@ class InteractionConsumer:
             weight=weight,
             source=event.source,
             session_id=event.session_id,
+            duration_played_ms=event.duration_played_ms,
+            completion_rate=event.completion_rate
         )
         
         doc = record.model_dump()
@@ -129,21 +131,18 @@ class InteractionConsumer:
                 for tp, messages in msg_pack.items():
                     for message in messages:
                         try:
+                            start_time = datetime.now()
                             data = message.value
-                            # If older schemas sent 'event_type' inside payload, we use it or default
-                            # In MusicEvent we added it properly.
                             event = MusicEvent(**data)
                             
                             success = await self._process_event(event)
                             
-                            # Acknowledge after successful processing
                             if success:
-                                # We could commit specific offsets, but for simplicity we commit all here
-                                # In production, commit the exact offset of the processed message
                                 self.consumer.commit()
+                                print(f"METRIC | Kafka Consume Success | event_type={event.event_type} | lag_ms={(datetime.now() - start_time).total_seconds() * 1000:.2f}")
                             
                         except Exception as e:
-                            print(f"Error processing message: {e}")
+                            print(f"METRIC | Kafka Consume Error | error={e}")
                 
                 await asyncio.sleep(0.01)
                 

@@ -2,8 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from backend.main import app
 
-client = TestClient(app)
-
 def test_get_recommendations_integration_known_user():
     """
     Integration test for the hybrid recommendation endpoint for a KNOWN_USER.

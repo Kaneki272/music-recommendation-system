@@ -3,8 +3,6 @@ from fastapi.testclient import TestClient
 from backend.main import app
 import time
 
-client = TestClient(app)
-
 def test_post_interaction():
     """
     Test that submitting an interaction event returns success and pushes to Kafka.

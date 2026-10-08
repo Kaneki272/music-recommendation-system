@@ -13,8 +13,8 @@ services:
   # ---------------------------------------------------------
   api:
     build: 
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     image: recsys-api:latest
     container_name: recsys-api
     ports:
@@ -24,7 +24,7 @@ services:
       - MONGO_URI=mongodb://user:password@mongo:27017/
       - REDIS_URI=redis://redis:6379/0
       - QDRANT_URI=http://qdrant:6333
-      - KAFKA_BROKERS=kafka:29092
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
       postgres:
         condition: service_healthy
@@ -35,6 +35,24 @@ services:
       kafka:
         condition: service_healthy
       qdrant:
+        condition: service_healthy
+    networks:
+      - recsys_network
+
+  consumer:
+    build:
+      context: .
+      dockerfile: streaming/Dockerfile.consumer
+    image: recsys-consumer:latest
+    container_name: recsys-consumer
+    environment:
+      - MONGO_URI=mongodb://user:password@mongo:27017/
+      - REDIS_URI=redis://redis:6379/0
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo:
         condition: service_healthy
     networks:
       - recsys_network

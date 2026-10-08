@@ -15,6 +15,9 @@ class InteractionPayload(BaseModel):
     song_id: str
     interaction_type: str = Field(..., description="E.g., play, like, skip")
     weight: Optional[float] = 1.0
+    duration_played_ms: Optional[int] = None
+    completion_rate: Optional[float] = None
+    session_id: Optional[str] = None
 
 # Singleton producer instance (initialized on startup in main.py ideally, 
 # but we can do lazy initialization or dependency injection)
@@ -41,7 +44,10 @@ async def create_interaction(
         track_id=payload.song_id,
         event_type=payload.interaction_type.upper(),
         timestamp=datetime.datetime.utcnow(),
-        source="api"
+        source="api",
+        duration_played_ms=payload.duration_played_ms,
+        completion_rate=payload.completion_rate,
+        session_id=payload.session_id
     )
     
     try:

@@ -41,13 +41,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import time
+import logging
+from fastapi import Request
+
+# Simple logger for metrics
+metrics_logger = logging.getLogger("recsys.metrics")
+metrics_logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+metrics_logger.addHandler(ch)
+
+@app.middleware("http")
+async def observability_middleware(request: Request, call_next):
+    start_time = time.perf_counter()
+    response = None
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    except Exception as e:
+        metrics_logger.error(f"Request Error: {request.method} {request.url.path} - {str(e)}")
+        raise e
+    finally:
+        process_time = (time.perf_counter() - start_time) * 1000
+        metrics_logger.info(f"API Metric | method={request.method} path={request.url.path} status={status_code} latency_ms={process_time:.2f}")
+    return response
+
 from backend.api.v1.recommendations.router import router as recommendations_router
 from backend.api.v1.interactions.router import router as interactions_router
 from backend.api.v1.songs.router import router as songs_router
+from backend.api.v1.onboarding.router import router as onboarding_router
 
 app.include_router(recommendations_router, prefix="/api/v1")
 app.include_router(interactions_router, prefix="/api/v1")
 app.include_router(songs_router, prefix="/api/v1")
+app.include_router(onboarding_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health_check():

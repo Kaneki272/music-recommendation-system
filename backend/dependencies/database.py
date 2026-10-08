@@ -14,6 +14,22 @@ postgres_session_factory = None
 mongo_client = None
 redis_client = None
 
+# Ensure all models are imported so they register with Base.metadata
+from backend.models.base import Base
+import backend.models.user
+import backend.models.rbac
+import backend.models.artist
+import backend.models.album
+import backend.models.song
+import backend.models.audio_features
+import backend.models.playlist
+import backend.models.playlist_song
+import backend.models.refresh_token
+import backend.models.etl_tracking
+
+import logging
+logger = logging.getLogger("recsys.db")
+
 async def init_postgres():
     global postgres_engine, postgres_session_factory
     postgres_engine = create_async_engine(
@@ -25,21 +41,22 @@ async def init_postgres():
         postgres_engine, class_=AsyncSession, expire_on_commit=False
     )
     
-    # Initialize the database schema
-    from backend.models.base import Base
-    import backend.models.user
-    import backend.models.rbac
-    import backend.models.artist
-    import backend.models.album
-    import backend.models.song
-    import backend.models.audio_features
-    import backend.models.playlist
-    import backend.models.playlist_song
-    import backend.models.refresh_token
-    import backend.models.etl_tracking
+    table_count = len(Base.metadata.tables)
+    logger.info(f"Loaded {table_count} SQLAlchemy tables.")
+    if table_count == 0:
+        logger.error("No tables were loaded! The imports may have failed.")
     
-    async with postgres_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    logger.info(f"Initializing PostgreSQL schema on {settings.POSTGRES_HOST}...")
+    try:
+        # Use engine.begin() which commits automatically
+        async with postgres_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("PostgreSQL schema initialization completed successfully.")
+    except Exception as e:
+        import traceback
+        logger.error(f"Schema initialization failed: {type(e).__name__} - {str(e)}")
+        logger.error(traceback.format_exc())
+        raise e
 
 async def close_postgres():
     global postgres_engine
