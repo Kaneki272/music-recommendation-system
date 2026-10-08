@@ -24,6 +24,22 @@ async def init_postgres():
     postgres_session_factory = sessionmaker(
         postgres_engine, class_=AsyncSession, expire_on_commit=False
     )
+    
+    # Initialize the database schema
+    from backend.models.base import Base
+    import backend.models.user
+    import backend.models.rbac
+    import backend.models.artist
+    import backend.models.album
+    import backend.models.song
+    import backend.models.audio_features
+    import backend.models.playlist
+    import backend.models.playlist_song
+    import backend.models.refresh_token
+    import backend.models.etl_tracking
+    
+    async with postgres_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 async def close_postgres():
     global postgres_engine
